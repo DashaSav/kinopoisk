@@ -53,9 +53,15 @@ android {
 
 dependencies {
     implementation(libs.androidx.material.icons.extended)
+
+    implementation(libs.androidx.navigation.compose)
+
+    // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.kotlinx.serialization)
     implementation(libs.kotlinx.serialization)
+
+    // Coil
     implementation(libs.coil)
     implementation(libs.coil.compose)
 

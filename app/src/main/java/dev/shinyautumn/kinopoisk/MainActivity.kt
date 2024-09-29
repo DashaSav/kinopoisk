@@ -1,6 +1,7 @@
 package dev.shinyautumn.kinopoisk
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -9,34 +10,63 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import dev.shinyautumn.kinopoisk.data.Movie
 import dev.shinyautumn.kinopoisk.data.MoviesApi
 import dev.shinyautumn.kinopoisk.data.RetrofitHelper
-import dev.shinyautumn.kinopoisk.ui.screens.MoviesScreen
+import dev.shinyautumn.kinopoisk.ui.navigation.CreateNavHost
+import dev.shinyautumn.kinopoisk.ui.navigation.Movies
 import dev.shinyautumn.kinopoisk.ui.theme.KinopoiskTheme
 
 class MainActivity : ComponentActivity() {
+    private val logins = mapOf(
+        "test" to "test",
+        "dasha" to "test",
+    )
+
     private val retrofit by lazy { RetrofitHelper.getInstance() }
 
     private val api by lazy { retrofit.create(MoviesApi::class.java) }
+
+    private lateinit var navController: NavHostController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            navController = rememberNavController()
+            var movies by remember { mutableStateOf(listOf<Movie>()) }
+
+            LaunchedEffect(this) {
+                movies = getMovies()
+            }
+
             KinopoiskTheme {
-                var movies by remember { mutableStateOf(listOf<Movie>()) }
-
-                LaunchedEffect(this) {
-                    movies = getMovies()
-                }
-
-                MoviesScreen(movies)
+                CreateNavHost(
+                    navController = navController,
+                    onLogin = ::login,
+                    movies = movies
+                )
             }
         }
     }
 
     private suspend fun getMovies(): List<Movie> {
         return api.getMovies().items
+    }
+
+    private fun login(login: String, password: String) {
+        if (login in logins && logins[login] == password) {
+            navController.navigate(Movies)
+        } else {
+            Toast
+                .makeText(
+                    this,
+                    "No such user or incorrect password",
+                    Toast.LENGTH_SHORT
+                )
+                .show()
+        }
     }
 }

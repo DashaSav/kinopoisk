@@ -1,6 +1,7 @@
 package dev.shinyautumn.kinopoisk.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,40 +43,18 @@ import dev.shinyautumn.kinopoisk.ui.components.MovieItem
 import dev.shinyautumn.kinopoisk.ui.theme.KinopoiskTheme
 
 @Composable
-fun MoviesScreen(movies: List<Movie>) {
+fun MoviesScreen(
+    movies: List<Movie>,
+    onMovieClick: (Movie) -> Unit,
+) {
     var isExpanded by remember { mutableStateOf(false) }
     val years = listOf("1994", "1995", "1996")
 
     Scaffold(
         modifier = Modifier
             .background(Color.Black)
-            .windowInsetsPadding(WindowInsets.systemBars)
-        ,
-        topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Black)
-                    .padding(8.dp)
-            ) {
-                Text(text = "KinoPoisk",
-                    color = Color.Cyan,
-                    fontSize = 24.sp,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-                IconButton(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.align(Alignment.CenterEnd),
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                        contentDescription = null,
-                        tint = Color.Cyan,
-                    )
-                }
-
-            }
-        }
+            .windowInsetsPadding(WindowInsets.systemBars),
+        topBar = { TopBar() }
     ) {
         LazyColumn(
             modifier = Modifier
@@ -104,8 +83,40 @@ fun MoviesScreen(movies: List<Movie>) {
             }
 
             items(movies) { movie ->
-                MovieItem(movie = movie, modifier = Modifier.padding(16.dp))
+                MovieItem(
+                    movie = movie,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable { onMovieClick(movie) }
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun TopBar() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Black)
+            .padding(8.dp)
+    ) {
+        Text(
+            text = "KinoPoisk",
+            color = Color.Cyan,
+            fontSize = 24.sp,
+            modifier = Modifier.align(Alignment.Center)
+        )
+        IconButton(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.align(Alignment.CenterEnd),
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                contentDescription = null,
+                tint = Color.Cyan,
+            )
         }
     }
 }
@@ -159,6 +170,6 @@ private fun MoviesScreen_Preview() {
             listOf(Genre("Боевик")),
             12.0,
             ""
-        )))
+        ))) {}
     }
 }
