@@ -30,6 +30,7 @@ data class Detail(val id: Int)
 fun CreateNavHost(
     navController: NavHostController,
     onLogin: (String, String) -> Unit,
+    onSearch: suspend (String) -> Unit,
     onSelectMovie: (Movie) -> Unit,
     fetchDetails: suspend (Int) -> MovieDetails,
     movies: List<Movie>
@@ -38,7 +39,11 @@ fun CreateNavHost(
         composable<Auth> { AuthScreen(onLogin) }
 
         composable<Movies> {
-            MoviesScreen(movies) { onSelectMovie(it) }
+            MoviesScreen(
+                movies = movies,
+                onSearch = onSearch,
+                onExit = { navController.popBackStack() }
+            ) { onSelectMovie(it) }
         }
 
         composable<Detail> { backStackEntry ->

@@ -50,7 +50,10 @@ class MainActivity : ComponentActivity() {
                     onLogin = ::login,
                     onSelectMovie = ::onSelectMovie,
                     movies = movies,
-                    fetchDetails = ::fetchDetails
+                    fetchDetails = ::fetchDetails,
+                    onSearch = {
+                        movies = onSearch(it)
+                    }
                 )
             }
         }
@@ -66,6 +69,10 @@ class MainActivity : ComponentActivity() {
 
     private suspend fun fetchDetails(id: Int): MovieDetails {
         return api.getMovieDetails(id)
+    }
+
+    private suspend fun onSearch(text: String): List<Movie> {
+        return api.getMovies(keyword = text).items
     }
 
     private fun login(login: String, password: String) {

@@ -9,7 +9,7 @@ data class Movie(
     val year: String,
     val countries: List<Country>,
     val genres: List<Genre>,
-    val ratingKinopoisk: Double,
+    val ratingKinopoisk: Double?,
     val posterUrlPreview: String,
     val posterUrl: String,
 )

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Search
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,10 +43,13 @@ import dev.shinyautumn.kinopoisk.data.Genre
 import dev.shinyautumn.kinopoisk.data.Movie
 import dev.shinyautumn.kinopoisk.ui.components.MovieItem
 import dev.shinyautumn.kinopoisk.ui.theme.KinopoiskTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun MoviesScreen(
     movies: List<Movie>,
+    onSearch: suspend (String) -> Unit,
+    onExit: () -> Unit,
     onMovieClick: (Movie) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -54,7 +59,7 @@ fun MoviesScreen(
         modifier = Modifier
             .background(Color.Black)
             .windowInsetsPadding(WindowInsets.systemBars),
-        topBar = { TopBar() }
+        topBar = { TopBar(onExit) }
     ) {
         LazyColumn(
             modifier = Modifier
@@ -64,7 +69,7 @@ fun MoviesScreen(
         ) {
             item {
                 Column {
-                    SearchBar()
+                    SearchBar(onSearch)
 
                     DropdownMenu(
                         expanded = isExpanded,
@@ -95,7 +100,7 @@ fun MoviesScreen(
 }
 
 @Composable
-private fun TopBar() {
+private fun TopBar(onExit: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -109,7 +114,7 @@ private fun TopBar() {
             modifier = Modifier.align(Alignment.Center)
         )
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = onExit,
             modifier = Modifier.align(Alignment.CenterEnd),
         ) {
             Icon(
@@ -122,8 +127,9 @@ private fun TopBar() {
 }
 
 @Composable
-private fun SearchBar() {
+private fun SearchBar(onSearch: suspend (String) -> Unit) {
     var search by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
 
     Row(
         modifier = Modifier
@@ -131,7 +137,7 @@ private fun SearchBar() {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = {}) {
             Icon(
                 imageVector = Icons.Default.SwapVert,
                 contentDescription = null,
@@ -146,14 +152,18 @@ private fun SearchBar() {
                 Text(text = "keyword", color = Color.Gray)
             },
             trailingIcon = {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = {
+                    scope.launch { onSearch(search) }
+                }
+                ) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = null,
                         tint = Color.Cyan,
                     )
                 }
-            }
+            },
+            keyboardActions = KeyboardActions(onSearch = { scope.launch { onSearch(search) } })
         )
 
     }
@@ -163,15 +173,20 @@ private fun SearchBar() {
 @Composable
 private fun MoviesScreen_Preview() {
     KinopoiskTheme {
-        MoviesScreen(listOf(Movie(
-            123,
-            "Title",
-            "1994",
-            listOf(Country("Russia")),
-            listOf(Genre("Боевик")),
-            12.0,
-            "",
-            ""
-        ))) {}
+        MoviesScreen(
+            movies = listOf(Movie(
+                123,
+                "Title",
+                "1994",
+                listOf(Country("Russia")),
+                listOf(Genre("Боевик")),
+                12.0,
+                "",
+                ""
+            )),
+            onSearch = {},
+            onMovieClick = { _ -> },
+            onExit = {}
+        )
     }
 }
