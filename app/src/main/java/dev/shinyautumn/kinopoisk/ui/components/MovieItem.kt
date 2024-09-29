@@ -62,11 +62,13 @@ fun MovieItem(
 private fun MovieItem_Preview() {
     KinopoiskTheme {
         MovieItem(movie = Movie(
+            123,
             "Title",
             "1994",
             listOf(Country("Russia")),
             listOf(Genre("Боевик")),
             12.0,
+            "",
             ""
         ))
     }

@@ -164,11 +164,13 @@ private fun SearchBar() {
 private fun MoviesScreen_Preview() {
     KinopoiskTheme {
         MoviesScreen(listOf(Movie(
+            123,
             "Title",
             "1994",
             listOf(Country("Russia")),
             listOf(Genre("Боевик")),
             12.0,
+            "",
             ""
         ))) {}
     }

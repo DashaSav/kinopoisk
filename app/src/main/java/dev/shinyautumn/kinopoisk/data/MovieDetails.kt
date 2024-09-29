@@ -3,19 +3,14 @@ package dev.shinyautumn.kinopoisk.data
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Movie(
+data class MovieDetails(
     val kinopoiskId: Int,
     val nameOriginal: String? = null,
+    val posterUrl: String,
+    val webUrl: String?,
+    val ratingKinopoisk: Double,
     val year: String,
+    val description: String?,
     val countries: List<Country>,
     val genres: List<Genre>,
-    val ratingKinopoisk: Double,
-    val posterUrlPreview: String,
-    val posterUrl: String,
 )
-
-@Serializable
-data class Country(val country: String)
-
-@Serializable
-data class Genre(val genre: String)

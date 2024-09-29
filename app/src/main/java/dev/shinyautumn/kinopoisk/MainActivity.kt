@@ -13,9 +13,11 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import dev.shinyautumn.kinopoisk.data.Movie
+import dev.shinyautumn.kinopoisk.data.MovieDetails
 import dev.shinyautumn.kinopoisk.data.MoviesApi
 import dev.shinyautumn.kinopoisk.data.RetrofitHelper
 import dev.shinyautumn.kinopoisk.ui.navigation.CreateNavHost
+import dev.shinyautumn.kinopoisk.ui.navigation.Detail
 import dev.shinyautumn.kinopoisk.ui.navigation.Movies
 import dev.shinyautumn.kinopoisk.ui.theme.KinopoiskTheme
 
@@ -46,7 +48,9 @@ class MainActivity : ComponentActivity() {
                 CreateNavHost(
                     navController = navController,
                     onLogin = ::login,
-                    movies = movies
+                    onSelectMovie = ::onSelectMovie,
+                    movies = movies,
+                    fetchDetails = ::fetchDetails
                 )
             }
         }
@@ -56,17 +60,25 @@ class MainActivity : ComponentActivity() {
         return api.getMovies().items
     }
 
+    private fun onSelectMovie(movie: Movie) {
+        navController.navigate(Detail(movie.kinopoiskId))
+    }
+
+    private suspend fun fetchDetails(id: Int): MovieDetails {
+        return api.getMovieDetails(id)
+    }
+
     private fun login(login: String, password: String) {
         if (login in logins && logins[login] == password) {
             navController.navigate(Movies)
         } else {
-            Toast
-                .makeText(
-                    this,
-                    "No such user or incorrect password",
-                    Toast.LENGTH_SHORT
-                )
-                .show()
+            showToast("No such user or incorrect password")
         }
+    }
+
+    private fun showToast(message: String) {
+        Toast
+            .makeText(this, message, Toast.LENGTH_SHORT)
+            .show()
     }
 }
